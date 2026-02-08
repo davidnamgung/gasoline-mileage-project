@@ -4,8 +4,6 @@ author: "David Namgung"
 date: "latest"
 output: 
   html_document:
-    toc: true
-    toc_float: true
     theme: flatly
     code_folding: show
 latex_engine: xelatex
@@ -32,17 +30,18 @@ head(data_table_B3)
 We fit a multiple linear regression model relating gasoline mileage y (miles per gallon) 
 to engine displacement x1 and the number of carburetor barrels x6.
 
-We constructed the analysis-of-variance table and test for significance of regression. 
-Defined appropriate hypotheses for this test. 
+We constructed the analysis-of-variance table, tested for significance of regression and defined appropriate hypotheses for this test. 
 
-```{r Q1}
+$$y = \beta_0 + \beta_1 x_1 + \beta_6 x_6 + \epsilon$$
+
+```{r}
 dat <- data.frame(
   y = data_table_B3$y, # y = Miles/gallon
   x1 = data_table_B3$x1, # x1 = Displacement
   x6 = data_table_B3$x6 # x6 = Carburetor
 )
 
-# Multiple linear regression model y = $\beta$0 + $\beta$1x1 + $\beta$6x6 + epsilon 
+# Multiple linear regression model y = $\beta$0 + $\beta$1x1 + $\beta$6x6 + epsilon
 model_1 <- lm(y ~ x1 + x6, data = dat)
 summary(model_1)
 
@@ -54,28 +53,35 @@ For the significance of regression, we want
 to summarize the conclusions via the overall fit, using the 
 F-statistic result from the summary of the overall model. 
 
+Hypotheses:
 
-H0: $\beta$1 = $\beta$6 = 0
+$$H_0: \beta_1 = \beta_6 = 0$$
 Neither engine displacement (x1) nor the number of carburetor 
 barrels (x6) has any linear relationship with gasoline mileage.
 
-H1: At least one $\beta$j != 0 
+$$H_1: \text{ At least one } \beta_j != 0$$
+
 At least one of the predictors (engine displacement 
 or carburetor barrels) is useful for predicting gasoline mileage.
 
-Test Statistic: "F-statistic: 53.67 on 2 and 29 DF,  
+Test Statistic: 
+
+"F-statistic: 53.67 on 2 and 29 DF,  
 p-value: 1.79e-10" from fitting the model,
 F = MSR/MSRes = (SSR/(p-1))  /  (SSRes)/(n-p)), 
+
 F = MSR/MSRes = (974.31/(3-1)) / (263.23)/(32-3)) = approx. 53.65,
 where p = 3 and n = 32.
 
 Since p-value 1.79e-10 is much smaller than $\alpha$ = 0.05, 
 we reject the null hypothesis H0.
+
 There is a statistically significant linear relationship between 
 gasoline mileage (y) and the combination of engine 
 displacement (x1) and carburetor barrels (x6).
-```
 
+
+### Miles per Gallon versus Engine Displacement
 ```{r}
 ggplot(dat, aes(x = x1, y = y)) +
   geom_point(aes(color = as.factor(x6)), size = 3) +
@@ -88,10 +94,11 @@ ggplot(dat, aes(x = x1, y = y)) +
   theme_minimal()
 ```
 
-## Question 3
+## $R^2$ and adjusted $R^2$
 
 $R^2$ and adjusted $R^2$ for this model. 
-Compare this to the $R^2$ and adjusted $R^2$ to the simple linear regression model relating mileage $y$ to engine displacement $x_1$.
+
+Comparing the $R^2$ and adjusted $R^2$ to the simple linear regression model relating to mileage $y$ to engine displacement $x_1$.
 
 ```{r Q3}
 # How well does my model explain the data?
@@ -118,38 +125,40 @@ cat("Adjusted R-Squared for MLR: ", adj_r2_mlr, "\n")
 # Simple Linear Regression Model
 cat("R-Squared for SLR: ", r2_slr, "\n")
 cat("Adjusted R-Squared for SLR: ", adj_r2_slr)
-
-### Conclusion:
-#   Multiple Linear Regression (x1 + x6)
-#   R-Squared of MLR: 0.7872928
-#   Adjusted R-Squared of MLR: 0.7726233
-
-# Simple Linear Regression (x1 only)
-#   R-Squared of SLR: 0.7722712 
-#   Adjusted R-Squared of SLR: 0.7646803
-
-# R-Squared always increases or stays the same when we add 
-#   more variables 
-# Coefficient of Determination R-Squared = measures the proportion 
-#   of variance in the response (y) explained by the predictors.
-#   R^2 = 1 - SSRes/SST
-
-# Adjusted R-Squared penalizes the model for adding 
-#   unnecessary predictors. 
-#   It accounts for the degrees of freedom (n-p)
-#   adj R^2 = 1 - (SSRes/(n-p)) / (SST/(n-1))
-
-# Our interpretation
-#   The MLR model (R-Squared = approx. 78.73%$) explains slightly 
-#   more variation than the SLR model (R-Squared =  approx. 77.23%$).
-
-# The adjusted metric R-Squared also increases from SLR's 
-#   approx. 76.47%  to MLR's approx. 77.26%
-#   Thus, Adding carburetor barrels (x6) to the model provided a 
-#   VERY small improvement in fit, but only a tiny amount. 
-#   Engine displacement (x1) accounts for the vast majority of 
-#   the predictive power.
 ```
+
+### Findings:
+Multiple Linear Regression: ($x_1 + x_6$) :
+
+* R-Squared of MLR: 0.7872928
+* Adjusted R-Squared of MLR: 0.7726233
+
+Simple Linear Regression ($x_1$ only) :
+
+  * R-Squared of SLR: 0.7722712 
+  * Adjusted R-Squared of SLR: 0.7646803
+
+
+$R^2$ always increases or stays the same when we add more variables 
+
+Coefficient of Determination R-Squared measures the proportion of variance in the response ($y$) explained by the predictors. $R^2$ = 1 - SSRes/SST
+
+Adjusted R-Squared penalizes the model for adding unnecessary predictors. 
+
+It accounts for the degrees of freedom (n-p) adj $R^2$ = 1 - (SSRes/(n-p)) / (SST/(n-1))
+
+### Interpretation:
+The MLR model ($R^2$ = approx. 78.73%) explains slightly 
+more variation than the SLR model ($R^2$ =  approx. 77.23%).
+
+The adjusted metric $R^2$ also increases from SLR's 
+approx. 76.47%  to MLR's approx. 77.26%.
+
+Thus, adding carburetor barrels ($x_6$) to the model provided a 
+VERY small improvement in fit, but only a tiny amount. 
+Engine displacement ($x_1$) accounts for the vast majority of 
+the predictive power.
+
 
 
 ## t-test for each regressor
@@ -158,93 +167,94 @@ cat("Adjusted R-Squared for SLR: ", adj_r2_slr)
 # Extract coefficients
 coef_summary <- summary(model_1)$coefficients
 kable(coef_summary, caption = "Regression Coefficients")
-
-# $\alpha$ = 0.05
-# H0: $\beta$j = 0.
-# Predictor adds no value to model given all other predictors are 
-#   already included
-
-# Ha: $\beta$j != 0. Predictor is significant.
-
-# For x1,
-# - t-test = -8.660425 according to the table.
-# - p-value = 1.549965e-09.
-
-# Conclusion: since p = 1.549965e-09 < $\alpha$ = 0.05,
-#   we reject the null hypothesis H0: $\beta$j = 0. Engine
-#   displacement makes a significant contribution to the model
-#   even when carburetor barrels (x6) are included. There is strong
-#   evidence that engine displacement is associated with
-#   gasoline mileage.
-
-# For x6,
-# t-test = 1.431, p-value = 1.630948e-01
-
-# Conclusion: since p = 1.630948e-01 > $\alpha$ = 0.05, 
-#   we FAIL to reject H0.
-#   The number of carburetor barrels does not make a
-#   statistically significant
-#   contribution to the model GIVEN that engine displacement is 
-#   already included.
-
-#   Despite the overall model being significant, only 
-#   engine displacement is a significant individual predictor. 
-#   Carburetor barrels appears to be redundant with the presence 
-#   of engine displacement. 
 ```
+
+### Results:
+
+$\alpha = 0.05$
+
+#### Hypotheses:
+
+$$H0: \beta_j = 0.$$
+
+Predictor adds no value to model given all other predictors are already included
+
+$$Ha: \beta_j != 0.$$ 
+
+Predictor is significant.
+
+##### For $x_1$,
+- t-test = -8.660425
+- p-value = 1.549965e-09
+
+##### Conclusion: 
+
+Since p = 1.549965e-09 which is smaller than $\alpha$ = 0.05,
+we reject the null hypothesis H0: $\beta$j = 0. 
+
+Engine displacement makes a significant contribution to the modeleven when carburetor barrels (x6) are included. There is strongevidence that engine displacement is associated with gasoline mileage.
+
+
+##### For  $x_6$, t-test = 1.431, p-value = 1.630948e-01
+
+
+
+#### Conclusion: 
+since p = 1.630948e-01 > $\alpha$ = 0.05, we FAIL to reject H0.
+
+The number of carburetor barrels does not make a statistically significant contribution to the model GIVEN that engine displacement is already included.
+
+
+Despite the overall model being significant, only engine displacement is a significant individual predictor. 
+
+Carburetor barrels appears to be redundant with the presence of engine displacement. 
+
 
 
 ## Confidence vs. Prediction Intervals
 
-95% CI for $\beta_1$.
+Finding a 95% CI for $\beta_1$.
 
 ```{r}
 # 95% CI for x1, using confint() for accuracy and simplicity
 confint(model_1, "x1", level = 0.95)
-#         2.5 %       97.5 %
-# x1  -0.06569957  -0.04059643
-
-# Where, 100(1-$\alpha$)$ confidence interval for 
-#   regression coefficient $\beta$j is given by 
-# beta_hat_j ± t_(n-p),$\alpha$/2 * estimate standard error (ese) 
-#   of beta_hat_j in our summary: 
-#   beta_hat_j = -0.05314767, ese(beta_hat_j) = 0.006136843
-# The critical value from t-distribution with n-p = 32 - 3 = 29 
-#   and $\alpha$/2 = 0.025 is approx. 2.045. 
-
-# Result: We are 95% confident that the true slope for x1 lies between 
-#   -0.06569957 and -0.04059643.
-
-# Since the entire interval is negative, w  e are statistically
-#   certain that larger engines are associated with lower gas mileage.
-
-# For every 1 cubic inch increase in engine displacement, 
-#   we estimate the car's fuel efficiency will drop between 0.041 
-#   and 0.066 miles per gallon, holding the numbers of 
-#   carburetors constant. 
-
 ```
+
+Where, 100(1-$\alpha$) confidence interval for regression coefficient $\beta_j$ is given by:
+
+$\beta_hat_j$ ± t_(n-p),$\alpha$/2 multiplied by "estimate standard error" or (ese) of $\beta_hat_j$ in our summary:
+
+* $\beta_hat_j$ = -0.05314767
+* ese($\beta_hat_j$) = 0.006136843
+* Critical value from t-distribution with n-p = 32 - 3 = 29 
+* $\alpha$/2 = 0.025 is approx. 2.045 
+
+#### Result: 
+We are 95% confident that the true slope for $x_1$ lies between -0.06569957 and -0.04059643
+
+Since the entire interval is negative, we are statistically certain that larger engines are associated with lower gas mileage.
+
+For every 1 cubic inch increase in engine displacement, we estimate the car's fuel efficiency will drop between 0.041 and 0.066 miles per gallon, holding the numbers of carburetors constant. 
+
  
 
 ### t-statistics
 
-Compute the t statistics for testing: 
-$H_0: \beta_1 = 0$ 
-$H_0: \beta_6 = 0$
+t-statistics for: 
+* $H_0: \beta_1 = 0$, number of carburetors and engine displacement are redundant.
+
+* $H_0: \beta_6 = 0$, they provide significant predictions for mileage.
+
+We want to test if a coefficient = 0, $t_0 = (beta_hat_j)$ / (ese($beta_hat_j$))
+
+t-distribution with n-p degrees of freedom under $H_0$.
+
+We reject the $H_0$ if |$t_0$| > $t_{(crit(n-p,\alpha / 2))}$
+
+Recall, for $\alpha$ = 0.05 and df = 20, the critical value is approcimately 2.045.
 
 ```{r}
-# H0: $\beta$1 and $\beta$6 = 0, # of carburetors and
-#   engine displacement are redundant.
-
-# Ha: $\beta$1 and $\beta$6 != 0, they provide significant 
-#   predictions for mileage.
-
-# Testing if a coefficient = 0, t_0 = (beta_hat_j - 0) / (ese(beta_hat_j))
-# t-distribution with n-p degrees of freedom under H0.
-# We reject H0 if |t_0| > t_crit (n-p, $\alpha$/2)
-#   For $\alpha$ = 0.05 and df = 29, critical value is approx. 2.045  
-
-# Extract the coefficients table to see t-values
+# Extracting coefficients table to see t-values
 coef_summary <- summary(model_1)$coefficients
 coef_summary
 #                Estimate  Std. Error   t value     Pr(>|t|)
@@ -266,25 +276,29 @@ cat("T-Statistic for x1: ", t_beta1, "\n") # [1] -8.660425
 cat("T-Statistic for x6: ", t_beta6, "\n") # [1] 1.431084
 # degrees of freedom:
 cat("Degrees of Freedom: ", df_res) # [1] 29
-
-
-# Conclusion:
-# Displacement
-#   For $\beta$1 the t-value = |-8.660425| = 8.660425, thus, we
-#   reject H0 since 8.660425 > 2.045.
-#   There is statistically significant evidence that
-#   engine displacement contributes to the model.
-
-# Carburetors
-#   For $\beta$6 = |1.431084| = 1.431084, we FAIL to reject H0
-#   since 1.431084  is NOT > 2.045. There is insufficient evidence
-#   to claim thatthe number of carburetor barrels contribute
-#   significantly to the model when displacement is already included.
 ```
+
+#### Conclusion:
+**Displacement**:
+
+For $\beta_1$ the t-value = |-8.660425| = 8.660425, thus, we reject $H_0$ since 8.660425 > 2.045. 
+
+There is statistically significant evidence that engine displacement contributes to the model.
+
+
+**Carburetors**:
+
+For $\beta_6$ = |1.431084| = 1.431084, we FAIL to reject $H_0$ since 1.431084 is NOT > 2.045. 
+
+There is **insufficient evidence** to claim thatthe number of carburetor barrels contribute significantly to the model when displacement is already included.
+
+
 
 ### Confidence Interval Example
 
-95% CI on the mean gasoline mileage when $x_1 = 275$ and $x_6 = 2$.
+Finding a 95% Confidence Interval on the mean gasoline mileage when 
+* $x_1 = 275$
+* $x_6 = 2$
 
 ```{r}
 # Defining the new observation (mean gasoline milage when x1 = 275, x6 = 2)
@@ -295,112 +309,106 @@ predict(model_1, newdata = new_car, interval = "confidence", level = 0.95)
 
 # Extract the coefficients table to see beta_hat values
 coef_summary <- summary(model_1)$coefficients
-#                Estimate  Std. Error   t value     Pr(>|t|)
-# (Intercept) 32.88455083 1.535407938 21.417468 2.546135e-19
-# x1          -0.05314767 0.006136843 -8.660425 1.549965e-09
-# x6           0.95922305 0.670277025  1.431084 1.630948e-01
-
-#     fit      lwr      upr
-# 1 20.18739 18.87221 21.50257
-
-# The point estimate is approx. 20.19 from the equation: 
-# y_hat = $\beta$0 - $\beta$1(275) + 0.96(2)
-
-# Lower bound: 18.97221
-# Upper Bound: 21.50257
-#   Which measures the uncertainty in the position of the 
-#   regression plane (the average) at that specific point.
-
-# Conclusion:
-#   We are 95% confident that the true average gasoline mileage for 
-#   all cars with an engine displacement of 275 cubic inches  and 
-#   2 carburetor barrels lies between 18.97 and 21.40 Miles per 
-#   Gallon (y), a range of 2.43 MPG.
-
-#   The small gap suggests that we are very sure about that the 
-#   average mileage of cars with these specs, would be approx. 20.2 
-#   Miles Per Gallon, give or take 1.2 MPG. 
 ```
+
+The point estimate is approx. 20.19 from the equation: 
+
+$$ \hat{y} = \beta_0 - \beta_1(275) + 0.96(2)$$
+
+* Lower bound: 18.97221
+* Upper Bound: 21.50257
+
+They measure the uncertainty in the position of the regression plane (the average) at that specific point.
+
+
+**Conclusion**:
+
+We are 95% confident that the true average gasoline mileage for all cars with an engine displacement of 275 cubic inches  and 2 carburetor barrels lies between 18.97 and 21.40 Miles per Gallon ($y$), a range of 2.43 MPG.
+
+
+The small gap suggests that we are very sure about that the average mileage of cars with these specs, would be approx. 20.2 Miles Per Gallon, give or take 1.2 MPG. 
+
 
 
 ### Prediction Interval Example
 
-95% prediction interval for a new observation on gasoline mileage when $x_1 = 275$ and $x_6 = 2$.
+Finding a 95% prediction interval for a new observation on gasoline mileage when $x_1 = 275$ and $x_6 = 2$.
 
 ```{r}
-# 95% PI for new observation when x1 = 275 and x6 = 2. Unlike CI, we use 
-# $\epsilon$ for 
-# Prediction Intervals.
-
 # New car's specs
 new_car_data <- data.frame(x1 = 275, x6 = 2)
 
 # 95% Prediction Interval
 predict(model_1, newdata = new_car_data, interval = "prediction", level = 0.95)
 
-
 # Extract the coefficients table to see beta_hat values
 coef_summary <- summary(model_1)$coefficients
-#                Estimate  Std. Error   t value     Pr(>|t|)
-# (Intercept) 32.88455083 1.535407938 21.417468 2.546135e-19
-# x1          -0.05314767 0.006136843 -8.660425 1.549965e-09
-# x6           0.95922305 0.670277025  1.431084 1.630948e-01
+coef_summary
 
 # Residual Standard Error
-sigma_hat <- summary(model_1)$sigma # [1] 3.012815
-df_res <- summary(model_1)$df[2]  # [1] 29
+sigma_hat <- summary(model_1)$sigma
+sigma_hat
+df_res <- summary(model_1)$df[2]
+df_res
 
-#     fit     lwr      upr
-# 1 20.18739 13.8867 26.48808
-
-# point estimate: 20.18739
-# Lower Bound: 13.8867
-# Upper Bound: 26.48808
-
-
-# Conclusion:
-#   We are 95% confident that a single specific automobile with 
-#   275 cubic inches engine displacement and 2 carburetor barrels 
-#   will have a gasoline mileage between 13.89 and 26.49 Miles 
-#   per Gallon, a range of 12.6 MPG.
-
-#   The large gap in the Prediction Interval compared the
-#   Confidence Interval suggests that individual cars are
-#   highly variable. If we buy one specific car, its mileage
-#   could plausibly be as low as 14 or as high as 26 which in itself 
-#   is a large pool of unit.
-
-#   While the model is very good at identifying the average behavior,
-#   it is not very precise at predicting individual outcomes
-#   because there is a lot of random variation, $\epsilon$,
-#   between cars that engine size alone cannot explain.
 ```
 
 
+point estimate: 20.18739
+Lower Bound: 13.8867
+Upper Bound: 26.48808
 
-## Question 9
 
-(a) Explain why usually $SS_{Res}$ is usually less than $PRESS$.
-(b) Calculate the total sum of squares $SS_T$ and the out-of-sample $R^2$ using the given PRESS statistic.
-(c) Based on the out-of-sample $R^2$, what comments can you make about the likely predictive performance of this model?
+**Conclusion:**
+
+We are 95% confident that a single specific automobile with 275 cubic inches engine displacement and 2 carburetor barrels will have a gasoline mileage between 13.89 and 26.49 Miles per Gallon, a range of 12.6 MPG.
+
+
+The large gap in the Prediction Interval compared theConfidence Interval suggests that individual cars arehighly variable. If we buy one specific car, its mileagecould plausibly be as low as 14 or as high as 26 which in itself is a large pool of unit.
+
+
+While the model is very good at identifying the average behavior,it is not very precise at predicting individual outcomes because there is a lot of random variation, $\epsilon$, between cars that engine size alone cannot explain.
+
+
+
+
+## Model Validation and Out-Of-Sample Performance
+
+**Recall:**
+$SS_{Res}$ measures the error on the data the model was trained on. The model is optimized specifically to minimize this error, "fitting" itself to the specific noise in that dataset.
+
+
+$PRESS$ measures the error on data points held out (leave-one-out cross-validation). Because the model hasn't seen these points during fitting, it cannot overfit to them, resulting in larger errors.
+
+$PRESS$ residual for point $i$ is measured by  $e_i$ = $e_i$ / $1-h_ii$.
+
+$e_i$ being the original residual, $h_ii$ is the leverage of $i$ which is always between 0 and 1 (and typically > 0).
+
+Since the denominator is less than 1, the $PRESS$ residual is mathematically guaranteed to be larger in magnitude than the ordinary residual. 
+
+Therefore, the sum of squared $PRESS$ residuals $PRESS$ will be larger than the sum of squared ordinary residuals $SS_{Res}$
+
+We want to find $SS_T$ and the out-of-sample $R^2$ using the given PRESS statistic.
+
+
 
 ```{r}
-model <- lm (model_1) 
+model <- lm (model_1)
 
 # Residuals and Leverage (hat values)
 hat_vals <- lm.influence(model)$hat
 hat_vals
 
 # Residuals
-residuals <- resid(model) 
+residuals <- resid(model)
 
 # PRESS Residuals, predictively adjusted residuals
 pressres <- resid(model)/(1 - lm.influence(model)$hat) 
 
 # SSRes, Residual sum of squares
-SSRes <- sum(residuals ^2) 
+SSRes <- sum(residuals ^2)
 # PRESS, Predicted Residual Error Sum of Squares
-PRESS <- sum(pressres ^2) 
+PRESS <- sum(pressres ^2)
 
 # Total Sum of Squares, Sum of differences from the mean of y
 SST <- sum((dat$y - mean(dat$y))^2)
@@ -409,57 +417,28 @@ SST <- sum((dat$y - mean(dat$y))^2)
 R2_prediction <- 1 - (PRESS/SST)
 
 # Residual Sum of Squares
-cat("Residual Sum of Squares (SSRes): ", SSRes,"\n") # 263.2345
-cat("Predicted Residual Error Sum of Squares (PRESS): ", PRESS,"\n") 
-# 328.7654 
-cat("Total Sum of Squares (SST): ", SST, "\n") # 1237.544 
-cat("Out-of-sample R-Squared (R2_prediction): ", R2_prediction) # 0.7343405
-
-
-# 9a)
-# SSRes measures the error on the data the model was trained on. 
-#   The model is optimized specifically to minimize this error, 
-#   "fitting" itself to the specific noise in that dataset.
-
-# PRESS measures the error on data points held out 
-#   (leave-one-out cross-validation). Because the model hasn't 
-#   seen these points during fitting, it cannot overfit to 
-#   them, resulting in larger errors.
-
-# PRESS residual for point i is measured by e_(i) = e_i / 1-h_ii
-#   e_i being the original residual, h_ii is the leverage of i, 
-#   which is always between 0 and 1 (and typically > 0).
-#   Since the denominator is less than 1, the PRESS residual 
-#   is mathematically guaranteed to be larger in magnitude than 
-#   the ordinary residual. 
-#   Therefore, the sum of squared PRESS residuals PRESS will be 
-#   larger than the sum of squared ordinary residuals SSRes.
-
-
-# 9b)
-# SST = 1237.544 
-# Out-of-sample R-Squared: 0.7343405 (73.43%)
-
-
-# 9c)
-# R-Squared of MLR: 0.7872928
-# Adjusted R-Squared of MLR: 0.7726233
-# Out-of-sample R-Squared: 0.7343405
-
-# Prediction R-Squared (0.734) is very close to the Adjusted R-Squared (0.773)
-#   This indicates that the model generalizes well and the
-#   performance does not drop much when it faces new cars.
-
-# It is not suffering from severe overfitting. The model is not relying
-#   on quirks or outliers in the 32 car dataset to achieve its score.
-
-# We can expect this model to explain about 74% of the variation 
-#   in gasoline mileage for future cars.
-
-# If the Prediction R-Squared were significantly lower (e.g., 0.50), 
-#   it would suggest the model fits the training data well but fails 
-#   to predict new, unseen observations accurately.
+cat("Residual Sum of Squares (SSRes): ", SSRes, "\n")
+cat("Predicted Residual Error Sum of Squares (PRESS): ", PRESS, "\n")
+cat("Total Sum of Squares (SST): ", SST, "\n")
+cat("Out-of-sample R-Squared (R2_prediction): ", R2_prediction)
 ```
+
+* R-Squared of MLR: 0.7872928
+* Adjusted R-Squared of MLR: 0.7726233
+* Out-of-sample R-Squared: 0.7343405
+
+Based on the out-of-sample $R^2$: 
+
+* Prediction R-Squared (0.734) is very close to the Adjusted R-Squared (0.773)This indicates that the model generalizes well and theperformance does not drop much when it faces new cars.
+
+* It is not suffering from severe overfitting. The model is not relying on quirks or outliers in the 32 car dataset to achieve its score.
+
+* We can expect this model to explain about 74% of the variation in gasoline mileage for future cars.
+
+If the Prediction R-Squared were significantly lower (e.g., 0.50), it would suggest the model fits the training data well but fails to predict new, unseen observations accurately.
+
+
+
 
 ## 
 

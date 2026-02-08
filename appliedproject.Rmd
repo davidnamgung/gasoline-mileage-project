@@ -1,12 +1,13 @@
 ---
-title: "MATH423 Applied Project"
-author: "David Namgung and Jennifer Wang"
+title: "Fuel Efficiency Forensics: A Comparative Regression Analysis of 1974 Automobile Data"
+author: "David Namgung"
 date: "3rd December 2025"
-output: pdf_document
+output: 
+  html: 
 latex_engine: xelatex
 ---
 
-## Libraries
+## Data Initialization
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -15,21 +16,13 @@ library(knitr)
 library(dplyr)
 ```
 
-## Loading Dataset
+## Loading the Dataset
 
 ```{r}
-## ----
-## load-the-dataset
-## ----
 file1 <- paste0("https://raw.githubusercontent.com/",
                 "mcgillstat/regression/main/data/data-table-B3.csv")
 data_table_B3 <- read.csv(file = file1)
 data_table_B3
-# for
-# demonstration,
-# print the first
-# six rows of the
-# matrix
 head(data_table_B3)
 ```
 
